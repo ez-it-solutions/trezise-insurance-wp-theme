@@ -1,0 +1,19 @@
+/*
+Theme Name: Trezise Insurance
+Theme URI: https://treziseinsurance.com
+Author: Ez IT Solutions
+Author URI: https://ez-it-solutions.com
+Description: Independent insurance guidance — a single-page design with a
+             scroll-grown tree emblem that condenses into the header.
+             Requires the Ez IT Core plugin for licensing and updates.
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 6.7
+Requires PHP: 8.0
+License: GPL-2.0-or-later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: trezise-insurance
+*/
+
+/* Design system lives in assets/css/styles.css — this file carries only
+   the WordPress theme header. */

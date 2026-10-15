@@ -1,0 +1,10 @@
+# OS/editor junk
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+.vscode/
+.idea/
+
+# Node tooling (if a build step is ever added)
+node_modules/
