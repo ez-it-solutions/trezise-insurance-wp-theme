@@ -285,6 +285,64 @@ if(faqPills && faqList){
   });
 }
 
+// phone auto-format — US numbers become (555) 555-5555 as you type;
+// a leading "+" keeps the country code with loose international
+// grouping, and an 11-digit number starting with 1 drops it.
+const phoneInput = document.getElementById('tz-phone');
+if(phoneInput){
+  phoneInput.addEventListener('input', () => {
+    const intl = phoneInput.value.trimStart().startsWith('+');
+    let d = phoneInput.value.replace(/\D/g, '');
+    if(intl || d.length > 11){
+      phoneInput.value = '+' + d.replace(/(\d{3})(?=\d)/g, '$1 ').trim();
+      return;
+    }
+    if(d.length === 11 && d[0] === '1') d = d.slice(1);
+    let out = '';
+    if(d.length > 0) out = '(' + d.slice(0, 3);
+    if(d.length >= 4) out += ') ' + d.slice(3, 6);
+    if(d.length >= 7) out += '-' + d.slice(6, 10);
+    phoneInput.value = out;
+  });
+}
+
+// email verify — format check + common-domain typo suggestion, live
+// as the visitor types and on blur. Red = invalid, amber = did-you-mean,
+// green = good.
+const emailInput = document.getElementById('tz-email');
+if(emailInput){
+  const typos = {
+    'gamil.com':'gmail.com','gmal.com':'gmail.com','gmial.com':'gmail.com','gmail.co':'gmail.com',
+    'yaho.com':'yahoo.com','yahooo.com':'yahoo.com','yhoo.com':'yahoo.com','yahoo.co':'yahoo.com',
+    'hotmal.com':'hotmail.com','hotmial.com':'hotmail.com','hotmail.co':'hotmail.com',
+    'outlok.com':'outlook.com','outloook.com':'outlook.com','outlook.co':'outlook.com',
+    'aol.cm':'aol.com','aol.co':'aol.com',
+    'iclod.com':'icloud.com','icloud.cm':'icloud.com',
+  };
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  const hint = document.createElement('p');
+  hint.className = 'tz-field-hint';
+  hint.hidden = true;
+  emailInput.insertAdjacentElement('afterend', hint);
+
+  const checkEmail = () => {
+    const v = emailInput.value.trim();
+    const bad = v !== '' && !re.test(v);
+    let typo = '';
+    if(!bad && v !== ''){
+      const [local, dom] = v.split('@');
+      if(typos[dom.toLowerCase()]) typo = `Did you mean ${local}@${typos[dom.toLowerCase()]}?`;
+    }
+    hint.textContent = bad ? 'Please enter a valid email address.' : typo;
+    hint.hidden = !bad && !typo;
+    emailInput.classList.toggle('tz-invalid', bad);
+    emailInput.classList.toggle('tz-warn', !bad && typo !== '');
+    emailInput.classList.toggle('tz-valid', !bad && !typo && v !== '');
+  };
+  emailInput.addEventListener('input', checkEmail);
+  emailInput.addEventListener('blur', checkEmail);
+}
+
 // contact form — the POST round-trips through admin-post.php and back,
 // so the button needs a pending state while it's in flight
 document.querySelectorAll('.tz-form[action*="admin-post.php"]').forEach(form => {

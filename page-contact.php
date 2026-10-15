@@ -56,7 +56,7 @@ get_header();
           <div class="tz-form-row">
             <div class="tz-field">
               <label for="tz-phone"><?php esc_html_e('Phone Number', 'trezise-insurance'); ?></label>
-              <input id="tz-phone" name="tz_phone" type="tel" autocomplete="tel">
+              <input id="tz-phone" name="tz_phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="(555) 555-5555">
             </div>
             <div class="tz-field">
               <label for="tz-subject"><?php esc_html_e('Subject', 'trezise-insurance'); ?></label>

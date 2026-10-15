@@ -244,6 +244,13 @@ a.tz-chip:hover{background:#fffdf8}
 .tz-field label{display:block;font:700 14px Arial,Helvetica,sans-serif;color:var(--brown);margin-bottom:6px}
 .tz-field input,.tz-field select,.tz-field textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:#fff;font:16px/1.4 Arial,Helvetica,sans-serif;color:var(--ink)}
 .tz-field input:focus,.tz-field select:focus,.tz-field textarea:focus{outline:2px solid rgba(94,113,64,.35);border-color:var(--green-dark)}
+.tz-field input.tz-valid{border-color:var(--green-dark)}
+.tz-field input.tz-invalid{border-color:#b3483a}
+.tz-field input.tz-invalid:focus{outline-color:rgba(179,72,58,.4);border-color:#b3483a}
+.tz-field input.tz-warn{border-color:#a97b2f}
+.tz-field input.tz-warn:focus{outline-color:rgba(169,123,47,.4);border-color:#a97b2f}
+.tz-field-hint{margin:6px 0 0;font:600 13.5px Arial,Helvetica,sans-serif;color:#8a3a2a}
+.tz-field input.tz-warn ~ .tz-field-hint{color:#7d5c22}
 .tz-hp{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
 .tz-btn.tz-sending{opacity:.75;cursor:progress;pointer-events:none;gap:10px}
 .tz-btn.tz-sending:hover{transform:none;box-shadow:none}
