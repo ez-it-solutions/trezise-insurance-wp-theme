@@ -81,7 +81,7 @@ get_header();
         <h3><?php esc_html_e('Our Contact Information', 'trezise-insurance'); ?></h3>
         <ul class="tz-info-list">
           <li><strong><?php esc_html_e('Phone', 'trezise-insurance'); ?></strong><a href="tel:9032842821">(903) 284-2821</a></li>
-          <li><strong><?php esc_html_e('Email', 'trezise-insurance'); ?></strong><a href="mailto:contact@treziseinsurance.com">contact@treziseinsurance.com</a></li>
+          <li><strong><?php esc_html_e('Email', 'trezise-insurance'); ?></strong><a href="mailto:treziseinsurance@yahoo.com">treziseinsurance@yahoo.com</a></li>
           <li><strong><?php esc_html_e('Office', 'trezise-insurance'); ?></strong><span>215 E Commerce St<br>Jacksonville, TX 75766</span></li>
           <li><strong><?php esc_html_e('Hours', 'trezise-insurance'); ?></strong><span><?php esc_html_e('Mon, Wed & Thu: 9 AM – 5 PM', 'trezise-insurance'); ?><br><?php esc_html_e('Tue: 9 AM – 4 PM · Fri: 9 AM – 12 PM', 'trezise-insurance'); ?><br><?php esc_html_e('Sat: By appointment · Sun: Closed', 'trezise-insurance'); ?></span></li>
         </ul>

@@ -10,12 +10,23 @@ if (! defined('ABSPATH')) {
 }
 
 /**
+ * The office mailbox — site sender AND default form recipient.
+ * Yahoo SMTP rejects mail unless From or Reply-To matches the
+ * authenticated mailbox, so this doubles as the From address.
+ */
+function trezise_contact_mailbox(): string
+{
+    $to = (string) get_theme_mod('trezise_contact_to', 'treziseinsurance@yahoo.com');
+    return is_email($to) ? $to : 'treziseinsurance@yahoo.com';
+}
+
+/**
  * Where contact submissions are sent. Filterable — e.g.
  * add_filter('trezise_contact_to', fn() => 'agent@example.com');
  */
 function trezise_contact_recipient(): string
 {
-    return (string) apply_filters('trezise_contact_to', 'contact@treziseinsurance.com');
+    return (string) apply_filters('trezise_contact_to', trezise_contact_mailbox());
 }
 
 function trezise_handle_contact(): void
@@ -47,7 +58,11 @@ function trezise_handle_contact(): void
             trezise_contact_recipient(),
             'Website contact: ' . ($subject !== '' ? $subject : 'New message'),
             $body,
-            array('Reply-To: ' . $name . ' <' . $email . '>')
+            array(
+                // Yahoo requires From to match the authenticated mailbox
+                'From: Trezise Insurance <' . trezise_contact_mailbox() . '>',
+                'Reply-To: ' . $name . ' <' . $email . '>',
+            )
         );
     }
 
@@ -55,7 +70,5 @@ function trezise_handle_contact(): void
     exit;
 }
 
-add_action('admin_post_trezise_contact', 'trezise_handle_contact');
-add_action('admin_post_nopriv_trezise_contact', 'trezise_handle_contact');
 add_action('admin_post_trezise_contact', 'trezise_handle_contact');
 add_action('admin_post_nopriv_trezise_contact', 'trezise_handle_contact');

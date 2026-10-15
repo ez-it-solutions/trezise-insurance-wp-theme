@@ -137,7 +137,7 @@ get_header();
         <a class="tz-phone" href="tel:9032842821">(903) 284-2821</a>
         <div class="tz-actions" style="margin-top:12px">
           <a class="tz-btn tz-primary" href="tel:9032842821"><?php esc_html_e('Call Now', 'trezise-insurance'); ?></a>
-          <a class="tz-btn tz-secondary" href="<?php echo esc_url(trezise_link('/contact/', 'mailto:contact@treziseinsurance.com')); ?>"><?php esc_html_e('Email Us', 'trezise-insurance'); ?></a>
+          <a class="tz-btn tz-secondary" href="<?php echo esc_url(trezise_link('/contact/', 'mailto:treziseinsurance@yahoo.com')); ?>"><?php esc_html_e('Email Us', 'trezise-insurance'); ?></a>
         </div>
         <p class="tz-fine"><?php trezise_field('cta_note'); ?></p>
       </div>

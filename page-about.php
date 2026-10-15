@@ -47,14 +47,14 @@ get_header();
           <h3><?php esc_html_e('Mark Trezise', 'trezise-insurance'); ?></h3>
           <p class="tz-role"><?php esc_html_e('Co-Owner & Licensed Insurance Agent', 'trezise-insurance'); ?></p>
           <p><?php esc_html_e('Mark specializes in Medicare with over two decades of experience. His focus is client education — making sure you understand every option before you choose.', 'trezise-insurance'); ?></p>
-          <p class="tz-member-contact"><a href="tel:9032842821">(903) 284-2821</a> · <a href="mailto:mark@treziseinsurance.com">mark@treziseinsurance.com</a></p>
+          <p class="tz-member-contact"><a href="tel:9032842821">(903) 284-2821</a> · <a href="mailto:treziseinsurance@yahoo.com">treziseinsurance@yahoo.com</a></p>
         </article>
         <article class="tz-card tz-member">
           <div class="tz-avatar" aria-hidden="true">KT</div>
           <h3><?php esc_html_e('Kristie Trezise', 'trezise-insurance'); ?></h3>
           <p class="tz-role"><?php esc_html_e('Co-Owner & Licensed Insurance Agent', 'trezise-insurance'); ?></p>
           <p><?php esc_html_e('Kristie brings deep expertise in the Affordable Care Act and the healthcare marketplace, helping families find affordable coverage that actually fits.', 'trezise-insurance'); ?></p>
-          <p class="tz-member-contact"><a href="tel:9032842821">(903) 284-2821</a> · <a href="mailto:kristie@treziseinsurance.com">kristie@treziseinsurance.com</a></p>
+          <p class="tz-member-contact"><a href="tel:9032842821">(903) 284-2821</a> · <a href="mailto:treziseinsurance@yahoo.com">treziseinsurance@yahoo.com</a></p>
         </article>
       </div>
     </div>

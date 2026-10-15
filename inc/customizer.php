@@ -79,7 +79,7 @@ function trezise_studio_fields(): array
         'mod_prefix' => 'trezise_',
         'sections'   => $sections,
         'defaults'   => trezise_home_defaults() + array(
-            'contact_to' => 'contact@treziseinsurance.com',
+            'contact_to' => 'treziseinsurance@yahoo.com',
         ),
     );
 }
@@ -118,6 +118,23 @@ add_action('customize_register', function (WP_Customize_Manager $wp): void {
         'description' => __('Leave blank for "Ez IT Solutions".', 'trezise-insurance'),
         'section'     => 'trezise_credit',
         'type'        => 'text',
+    ));
+
+    // Contact form recipient — same mod Site Studio writes
+    // (Ez IT → Settings → Site Studio → Contact).
+    $wp->add_section('trezise_contact', array(
+        'title'       => __('Contact Form', 'trezise-insurance'),
+        'priority'    => 161,
+        'description' => __('Where the /contact/ form sends submissions.', 'trezise-insurance'),
+    ));
+    $wp->add_setting('trezise_contact_to', array(
+        'default'           => 'treziseinsurance@yahoo.com',
+        'sanitize_callback' => 'sanitize_email',
+    ));
+    $wp->add_control('trezise_contact_to', array(
+        'label'   => __('Recipient email', 'trezise-insurance'),
+        'section' => 'trezise_contact',
+        'type'    => 'email',
     ));
 
     foreach (trezise_home_sections() as $section_id => $config) {
