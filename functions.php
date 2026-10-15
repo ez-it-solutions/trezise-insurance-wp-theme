@@ -37,6 +37,20 @@ if (function_exists('ezit_core')) {
             'accent' => '#5e7140', // --green-dark from the Trezise design system
             'bg'     => get_stylesheet_directory_uri() . '/assets/images/hero.png',
         ],
+        // Banner slots core can manage — Ez IT → Settings → Alerts & banners.
+        // Defaults mirror what header.php shipped with, so the bar looks
+        // identical until someone edits it.
+        'slots'        => [
+            'enroll' => [
+                'label'    => 'Enrollment notice bar',
+                'defaults' => [
+                    'label'  => 'Annual Enrollment Period',
+                    'detail' => 'Oct 15 – Dec 7',
+                    'cta'    => 'Schedule a free plan review',
+                    'url'    => '/contact/#contact',
+                ],
+            ],
+        ],
     ]);
 }
 
