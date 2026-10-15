@@ -33,6 +33,45 @@ function trezise_field_label(string $key): string
     return ucwords(str_replace('_', ' ', $key));
 }
 
+/**
+ * Long-form copy gets a textarea — shared by the Customizer and the
+ * Studio schema so a new key needs no type flag.
+ */
+function trezise_field_type(string $key): string
+{
+    return preg_match('/_(desc|a[0-9]?|body[0-9]?|quote|intro|subtitle)$/', $key)
+        ? 'textarea'
+        : 'text';
+}
+
+/**
+ * Site Studio schema — the same section map the Customizer renders,
+ * exposed to Ez IT Core so Settings → Site Studio edits the identical
+ * theme mods (trezise_<key>).
+ */
+function trezise_studio_fields(): array
+{
+    $sections = array();
+    foreach (trezise_home_sections() as $id => $config) {
+        list($label, $keys) = $config;
+        $fields = array();
+        foreach ($keys as $key) {
+            $fields[$key] = array(
+                'label' => trezise_field_label($key),
+                'type'  => trezise_field_type($key),
+            );
+        }
+        $sections[$id] = array('label' => $label, 'fields' => $fields);
+    }
+
+    return array(
+        'title'      => 'Homepage content',
+        'mod_prefix' => 'trezise_',
+        'sections'   => $sections,
+        'defaults'   => trezise_home_defaults(),
+    );
+}
+
 add_action('customize_register', function (WP_Customize_Manager $wp): void {
     $defaults = trezise_home_defaults();
 
@@ -40,7 +79,7 @@ add_action('customize_register', function (WP_Customize_Manager $wp): void {
         'title'       => __('Trezise — Homepage', 'trezise-insurance'),
         'description' => __('Edit the copy for each section of the front page. Leave a field blank to restore its default text.', 'trezise-insurance'),
         'priority'    => 30,
-    ));
+    ));tzisefield_ype$k) === 'xaa
 
     // Footer credit — same theme mods Ez IT Core manages (ezit_credit_*),
     // so this section and Ez IT → Themes edit one shared setting.

@@ -51,6 +51,10 @@ if (function_exists('ezit_core')) {
                 ],
             ],
         ],
+        // Site Studio field schema — callable so it resolves after
+        // inc/customizer.php loads (registration runs before the
+        // require_once lines below).
+        'fields'       => 'trezise_studio_fields',
     ]);
 }
 
