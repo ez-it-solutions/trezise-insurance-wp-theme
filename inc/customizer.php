@@ -79,7 +79,7 @@ add_action('customize_register', function (WP_Customize_Manager $wp): void {
         'title'       => __('Trezise — Homepage', 'trezise-insurance'),
         'description' => __('Edit the copy for each section of the front page. Leave a field blank to restore its default text.', 'trezise-insurance'),
         'priority'    => 30,
-    ));tzisefield_ype$k) === 'xaa
+    ));
 
     // Footer credit — same theme mods Ez IT Core manages (ezit_credit_*),
     // so this section and Ez IT → Themes edit one shared setting.
@@ -118,7 +118,7 @@ add_action('customize_register', function (WP_Customize_Manager $wp): void {
 
         foreach ($keys as $key) {
             $setting = 'trezise_' . $key;
-            $is_long = (bool) preg_match('/_(desc|a[0-9]?|body[0-9]?|quote|intro|subtitle)$/', $key);
+            $is_long = trezise_field_type($key) === 'textarea';
 
             $wp->add_setting($setting, array(
                 'default'           => isset($defaults[$key]) ? $defaults[$key] : '',
