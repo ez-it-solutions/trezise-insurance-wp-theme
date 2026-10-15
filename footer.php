@@ -35,7 +35,13 @@ if (! defined('ABSPATH')) {
       </ul>
     </div>
   </div>
-  <div class="tz-footer-bottom"><div class="tz-wrap"><span>&copy; <?php echo esc_html(gmdate('Y')); ?> <?php bloginfo('name'); ?><span class="tz-legal-tail"> &middot; <?php esc_html_e('Licensed &amp; Local &middot; Jacksonville, Texas', 'trezise-insurance'); ?></span></span><span class="tz-credit"><?php esc_html_e('Made with', 'trezise-insurance'); ?> <span class="tz-heart" aria-hidden="true">&hearts;</span> <?php esc_html_e('by', 'trezise-insurance'); ?> <a href="http://www.Ez-IT-Solutions.com" target="_blank" rel="noopener">Ez IT Solutions</a></span></div></div>
+  <div class="tz-footer-bottom"><div class="tz-wrap"><span>&copy; <?php echo esc_html(gmdate('Y')); ?> <?php bloginfo('name'); ?><span class="tz-legal-tail"> &middot; <?php esc_html_e('Licensed &amp; Local &middot; Jacksonville, Texas', 'trezise-insurance'); ?></span></span><?php
+    // Footer credit — theme mods managed from Ez IT → Themes (or the
+    // Customizer). ezit_credit_enabled toggles it; ezit_credit_text
+    // swaps the credited name (link stays on Ez IT).
+    if (get_theme_mod('ezit_credit_enabled', true)) :
+        $ezit_credit_name = get_theme_mod('ezit_credit_text', '') ?: 'Ez IT Solutions';
+    ?><span class="tz-credit"><?php esc_html_e('Made with', 'trezise-insurance'); ?> <span class="tz-heart" aria-hidden="true">&hearts;</span> <?php esc_html_e('by', 'trezise-insurance'); ?> <a href="https://www.ez-it-solutions.com" target="_blank" rel="noopener"><?php echo esc_html($ezit_credit_name); ?></a></span><?php endif; ?></div></div>
 </footer>
 <a class="tz-mobile-call" href="tel:9032842821"><?php esc_html_e('Call Trezise Insurance', 'trezise-insurance'); ?></a>
 <?php wp_footer(); ?>

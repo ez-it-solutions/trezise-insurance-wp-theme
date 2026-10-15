@@ -42,6 +42,33 @@ add_action('customize_register', function (WP_Customize_Manager $wp): void {
         'priority'    => 30,
     ));
 
+    // Footer credit — same theme mods Ez IT Core manages (ezit_credit_*),
+    // so this section and Ez IT → Themes edit one shared setting.
+    $wp->add_section('trezise_credit', array(
+        'title'       => __('Footer Credit', 'trezise-insurance'),
+        'priority'    => 160,
+        'description' => __('Toggle the "Made with ♥ by Ez IT Solutions" credit, or change the credited name.', 'trezise-insurance'),
+    ));
+    $wp->add_setting('ezit_credit_enabled', array(
+        'default'           => true,
+        'sanitize_callback' => 'rest_sanitize_boolean',
+    ));
+    $wp->add_control('ezit_credit_enabled', array(
+        'label'   => __('Show the footer credit', 'trezise-insurance'),
+        'section' => 'trezise_credit',
+        'type'    => 'checkbox',
+    ));
+    $wp->add_setting('ezit_credit_text', array(
+        'default'           => '',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp->add_control('ezit_credit_text', array(
+        'label'       => __('Credit text', 'trezise-insurance'),
+        'description' => __('Leave blank for "Ez IT Solutions".', 'trezise-insurance'),
+        'section'     => 'trezise_credit',
+        'type'        => 'text',
+    ));
+
     foreach (trezise_home_sections() as $section_id => $config) {
         list($label, $keys) = $config;
 

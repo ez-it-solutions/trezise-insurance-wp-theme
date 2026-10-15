@@ -1,0 +1,14 @@
+{
+    "slug": "trezise-insurance",
+    "type": "theme",
+    "name": "Trezise Insurance",
+    "version": "1.0.0",
+    "author": "Ez IT Solutions",
+    "vertical": "insurance",
+    "product_id": "F43D2273",
+    "api_key": "a443f7ed5b12f284de38",
+    "credit": true,
+    "roles": {
+        "owner": "Site Owner"
+    }
+}
