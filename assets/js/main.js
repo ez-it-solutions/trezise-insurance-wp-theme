@@ -343,6 +343,14 @@ if(emailInput){
   emailInput.addEventListener('blur', checkEmail);
 }
 
+// the ?contact=sent|failed flag did its job once the notice rendered —
+// strip it so the URL (and any copied link) stays clean
+if(location.search.includes('contact=')){
+  const clean = new URL(location.href);
+  clean.searchParams.delete('contact');
+  history.replaceState(null, '', clean.pathname + clean.search + clean.hash);
+}
+
 // contact form — the POST round-trips through admin-post.php and back,
 // so the button needs a pending state while it's in flight
 document.querySelectorAll('.tz-form[action*="admin-post.php"]').forEach(form => {

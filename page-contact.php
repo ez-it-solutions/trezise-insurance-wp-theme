@@ -10,7 +10,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-$sent = isset($_GET['sent']) ? sanitize_key($_GET['sent']) : '';
+$sent = isset($_GET['contact']) ? sanitize_key($_GET['contact']) : '';
 
 get_header();
 ?>
@@ -34,9 +34,9 @@ get_header();
         <div class="tz-kicker"><?php esc_html_e('Send Us a Message', 'trezise-insurance'); ?></div>
         <h2><?php esc_html_e('How can we help you?', 'trezise-insurance'); ?></h2>
 
-        <?php if ('1' === $sent) : ?>
+        <?php if ('sent' === $sent) : ?>
           <p class="tz-form-note tz-ok"><?php esc_html_e('Thanks — your message is on its way. We&rsquo;ll get back to you soon.', 'trezise-insurance'); ?></p>
-        <?php elseif ('0' === $sent) : ?>
+        <?php elseif ('failed' === $sent) : ?>
           <p class="tz-form-note tz-err"><?php esc_html_e('Something didn&rsquo;t go through. Please try again, or call us directly.', 'trezise-insurance'); ?></p>
         <?php endif; ?>
 

@@ -40,7 +40,7 @@ function trezise_handle_contact(): void
     }
 
     if (! isset($_POST['trezise_contact_nonce']) || ! wp_verify_nonce($_POST['trezise_contact_nonce'], 'trezise_contact')) {
-        wp_safe_redirect(add_query_arg('sent', '0', $fallback));
+        wp_safe_redirect(add_query_arg('contact', 'failed', $fallback));
         exit;
     }
 
@@ -58,15 +58,14 @@ function trezise_handle_contact(): void
             trezise_contact_recipient(),
             'Website contact: ' . ($subject !== '' ? $subject : 'New message'),
             $body,
-            array(
-                // Yahoo requires From to match the authenticated mailbox
-                'From: Trezise Insurance <' . trezise_contact_mailbox() . '>',
-                'Reply-To: ' . $name . ' <' . $email . '>',
-            )
+            // Yahoo rejects the mail unless EVERY From/Reply-To header
+            // matches the authenticated mailbox — so no Reply-To; the
+            // visitor's address is already in the body above.
+            array('From: Trezise Insurance <' . trezise_contact_mailbox() . '>')
         );
     }
 
-    wp_safe_redirect(add_query_arg('sent', $valid ? '1' : '0', $fallback) . '#contact');
+    wp_safe_redirect(add_query_arg('contact', $valid ? 'sent' : 'failed', $fallback) . '#contact');
     exit;
 }
 
