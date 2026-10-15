@@ -51,9 +51,11 @@ function trezise_handle_contact(): void
         );
     }
 
-    wp_safe_redirect(add_query_arg('sent', $valid ? '1' : '0', $fallback) . '#top');
+    wp_safe_redirect(add_query_arg('sent', $valid ? '1' : '0', $fallback) . '#contact');
     exit;
 }
 
+add_action('admin_post_trezise_contact', 'trezise_handle_contact');
+add_action('admin_post_nopriv_trezise_contact', 'trezise_handle_contact');
 add_action('admin_post_trezise_contact', 'trezise_handle_contact');
 add_action('admin_post_nopriv_trezise_contact', 'trezise_handle_contact');

@@ -64,11 +64,23 @@ function trezise_studio_fields(): array
         $sections[$id] = array('label' => $label, 'fields' => $fields);
     }
 
+    $sections['contact'] = array(
+        'label'  => 'Contact',
+        'fields' => array(
+            'contact_to' => array(
+                'label' => 'Contact form recipient email',
+                'type'  => 'email',
+            ),
+        ),
+    );
+
     return array(
-        'title'      => 'Homepage content',
+        'title'      => 'Site content',
         'mod_prefix' => 'trezise_',
         'sections'   => $sections,
-        'defaults'   => trezise_home_defaults(),
+        'defaults'   => trezise_home_defaults() + array(
+            'contact_to' => 'contact@treziseinsurance.com',
+        ),
     );
 }
 

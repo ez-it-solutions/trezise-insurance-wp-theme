@@ -245,6 +245,11 @@ a.tz-chip:hover{background:#fffdf8}
 .tz-field input,.tz-field select,.tz-field textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:#fff;font:16px/1.4 Arial,Helvetica,sans-serif;color:var(--ink)}
 .tz-field input:focus,.tz-field select:focus,.tz-field textarea:focus{outline:2px solid rgba(94,113,64,.35);border-color:var(--green-dark)}
 .tz-hp{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+.tz-btn.tz-sending{opacity:.75;cursor:progress;pointer-events:none;gap:10px}
+.tz-btn.tz-sending:hover{transform:none;box-shadow:none}
+.tz-spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:tz-spin .7s linear infinite}
+@keyframes tz-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.tz-spin{animation-duration:1.4s}}
 .tz-form-note{padding:14px 18px;border-radius:10px;font:600 16px Arial,Helvetica,sans-serif;margin:14px 0 0}
 .tz-ok{background:rgba(124,144,82,.14);color:var(--green-dark)}
 .tz-err{background:rgba(160,60,40,.1);color:#8a3a2a}

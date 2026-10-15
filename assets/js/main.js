@@ -285,6 +285,18 @@ if(faqPills && faqList){
   });
 }
 
+// contact form — the POST round-trips through admin-post.php and back,
+// so the button needs a pending state while it's in flight
+document.querySelectorAll('.tz-form[action*="admin-post.php"]').forEach(form => {
+  form.addEventListener('submit', () => {
+    const btn = form.querySelector('button[type="submit"]');
+    if(!btn) return;
+    btn.classList.add('tz-sending');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="tz-spin" aria-hidden="true"></span>Sending…';
+  });
+});
+
 // mobile menu drawer
 const menuBtn = document.getElementById('menuBtn');
 const mobileMenu = document.getElementById('mobileMenu');

@@ -28,7 +28,7 @@ get_header();
     </div>
   </section>
 
-  <section class="tz-section">
+  <section class="tz-section" id="contact">
     <div class="tz-wrap tz-contact-grid">
       <div>
         <div class="tz-kicker"><?php esc_html_e('Send Us a Message', 'trezise-insurance'); ?></div>
