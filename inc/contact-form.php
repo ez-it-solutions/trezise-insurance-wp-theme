@@ -62,17 +62,15 @@ function trezise_handle_contact(): void
         $respond(true); // fake success — don't teach the bot it failed
     }
 
-    if (! isset($_POST['trezise_contact_nonce']) || ! wp_verify_nonce($_POST['trezise_contact_nonce'], 'trezise_contact')) {
-        $respond(false, 'nonce');
-    }
-
-    // 2) Min fill time — the signed render timestamp must check out
-    //    and be >= 3s old; humans can't complete this form faster.
+    // 2) Signed render timestamp — the real anti-forgery gate. The HMAC
+    //    can't be produced without wp_salt, and the >= 3s minimum defeats
+    //    instant bot posts. (A nonce would break on cached pages serving
+    //    a stale/session-mismatched token — the signature doesn't care.)
     $ts  = (int) ($_POST['tz_ts'] ?? 0);
     $sig = sanitize_text_field(wp_unslash($_POST['tz_sig'] ?? ''));
     $ok_sig = $ts > 0 && hash_equals(hash_hmac('sha256', (string) $ts, wp_salt('auth')), $sig);
     if (! $ok_sig || time() - $ts < 3 || $ts > time() + 300) {
-        $respond(true); // racing bot — fake success
+        $respond(true); // racing/forged bot — fake success
     }
 
     // 3) Per-IP rate limit — 3 submissions/hour. Logged-in admins are
