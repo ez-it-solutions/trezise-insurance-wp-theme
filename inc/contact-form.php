@@ -74,7 +74,7 @@ function trezise_handle_contact(): void
     // ── bot defenses ──────────────────────────────────────────────
     // Honeypot — real users never fill this. Bots get a fake success
     // so nothing tips them off, but the attempt is still logged.
-    if (! empty($_POST['tz_company'])) {
+    if (! empty($_POST['tz_hp'])) {
         if (class_exists('EzIT_Mail_Log')) {
             EzIT_Mail_Log::note('blocked', '', 'Contact form', 'Honeypot filled');
         }

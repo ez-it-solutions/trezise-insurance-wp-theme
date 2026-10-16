@@ -75,7 +75,7 @@ get_header();
             <label for="tz-message"><?php esc_html_e('Your Message', 'trezise-insurance'); ?></label>
             <textarea id="tz-message" name="tz_message" rows="5" required></textarea>
           </div>
-          <p class="tz-hp" aria-hidden="true"><label>Leave this empty <input type="text" name="tz_company" tabindex="-1" autocomplete="off"></label></p>
+          <p class="tz-hp" aria-hidden="true"><label>Leave this empty <input type="text" name="tz_hp" tabindex="-1" autocomplete="new-password" data-lpignore="true" data-1p-ignore data-form-type="other"></label></p>
           <button class="tz-btn tz-primary" type="submit"><?php esc_html_e('Send Message', 'trezise-insurance'); ?></button>
         </form>
       </div>
