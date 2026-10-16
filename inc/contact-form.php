@@ -34,16 +34,25 @@ function trezise_handle_contact(): void
     $ajax = strtolower(sanitize_text_field($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '')) === 'xmlhttprequest';
 
     // One exit path — JSON for the fetch() submit, redirect fallback
-    // for no-JS so the form still works everywhere.
-    $respond = static function (bool $ok) use ($ajax): void {
+    // for no-JS so the form still works everywhere. A failure $code is
+    // appended for logged-in users only — visitors get the plain message.
+    $respond = static function (bool $ok, string $code = '') use ($ajax): void {
         if ($ajax) {
             if ($ok) {
                 wp_send_json_success(['message' => __('Thanks — your message is on its way. We’ll get back to you soon.', 'trezise-insurance')]);
             }
-            wp_send_json_error(['message' => __('Something didn’t go through. Please try again, or call us directly.', 'trezise-insurance')]);
+            $msg = __('Something didn’t go through. Please try again, or call us directly.', 'trezise-insurance');
+            if ($code !== '' && is_user_logged_in()) {
+                $msg .= ' [' . $code . ']';
+            }
+            wp_send_json_error(['message' => $msg]);
         }
         $fallback = wp_get_referer() ?: home_url('/contact/');
-        wp_safe_redirect(add_query_arg('contact', $ok ? 'sent' : 'failed', $fallback) . '#contact');
+        $args = ['contact' => $ok ? 'sent' : 'failed'];
+        if (! $ok && $code !== '' && is_user_logged_in()) {
+            $args['why'] = $code;
+        }
+        wp_safe_redirect(add_query_arg($args, $fallback) . '#contact');
         exit;
     };
 
@@ -54,7 +63,7 @@ function trezise_handle_contact(): void
     }
 
     if (! isset($_POST['trezise_contact_nonce']) || ! wp_verify_nonce($_POST['trezise_contact_nonce'], 'trezise_contact')) {
-        $respond(false);
+        $respond(false, 'nonce');
     }
 
     // 2) Min fill time — the signed render timestamp must check out
@@ -88,22 +97,22 @@ function trezise_handle_contact(): void
     $subject = isset($_POST['tz_subject']) ? sanitize_text_field(wp_unslash($_POST['tz_subject'])) : '';
     $message = isset($_POST['tz_message']) ? sanitize_textarea_field(wp_unslash($_POST['tz_message'])) : '';
 
-    $valid = $name !== '' && $message !== '' && is_email($email);
-
-    if ($valid) {
-        $body = "Name: {$name}\nEmail: {$email}\nPhone: {$phone}\nSubject: {$subject}\n\n{$message}";
-        $valid = wp_mail(
-            trezise_contact_recipient(),
-            'Website contact: ' . ($subject !== '' ? $subject : 'New message'),
-            $body,
-            // Yahoo rejects the mail unless EVERY From/Reply-To header
-            // matches the authenticated mailbox — so no Reply-To; the
-            // visitor's address is already in the body above.
-            array('From: Trezise Insurance <' . trezise_contact_mailbox() . '>')
-        );
+    if (! ($name !== '' && $message !== '' && is_email($email))) {
+        $respond(false, 'invalid');
     }
 
-    $respond($valid);
+    $body = "Name: {$name}\nEmail: {$email}\nPhone: {$phone}\nSubject: {$subject}\n\n{$message}";
+    $ok = wp_mail(
+        trezise_contact_recipient(),
+        'Website contact: ' . ($subject !== '' ? $subject : 'New message'),
+        $body,
+        // Yahoo rejects the mail unless EVERY From/Reply-To header
+        // matches the authenticated mailbox — so no Reply-To; the
+        // visitor's address is already in the body above.
+        array('From: Trezise Insurance <' . trezise_contact_mailbox() . '>')
+    );
+
+    $respond($ok, $ok ? '' : 'mail');
 }
 
 add_action('admin_post_trezise_contact', 'trezise_handle_contact');
