@@ -128,7 +128,8 @@ function trezise_handle_contact(): void
     // Branded HTML mail — theme palette: paper card on cream, green
     // rule, brown heading. Tables + inline styles only; email clients
     // strip <style> blocks and flexbox.
-    $logo    = get_stylesheet_directory_uri() . '/assets/images/logo.svg';
+    // PNG over SVG — Outlook desktop won't render vector images.
+    $logo    = get_stylesheet_directory_uri() . '/assets/images/logo.png';
     $site    = esc_url(home_url());
     $esc_msg = nl2br(esc_html($message));
     $esc_heading = esc_html($heading);
