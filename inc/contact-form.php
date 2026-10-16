@@ -66,13 +66,21 @@ function trezise_handle_contact(): void
         $respond(true); // racing bot — fake success
     }
 
-    // 3) Per-IP rate limit — 3 submissions/hour.
-    $key  = 'tz_cf_' . md5(sanitize_text_field($_SERVER['REMOTE_ADDR'] ?? ''));
-    $hits = (int) get_transient($key);
-    if ($hits >= 3) {
-        $respond(false);
+    // 3) Per-IP rate limit — 3 submissions/hour. Logged-in admins are
+    //    exempt: the site owner testing their own form isn't a bot.
+    $is_admin = is_user_logged_in() && current_user_can('manage_options');
+    if (! $is_admin) {
+        $key  = 'tz_cf_' . md5(sanitize_text_field($_SERVER['REMOTE_ADDR'] ?? ''));
+        $hits = (int) get_transient($key);
+        if ($hits >= 3) {
+            if ($ajax) {
+                wp_send_json_error(['message' => __('Too many messages — please call us, or try again in a little while.', 'trezise-insurance')]);
+            }
+            wp_safe_redirect(add_query_arg('contact', 'failed', wp_get_referer() ?: home_url('/contact/')) . '#contact');
+            exit;
+        }
+        set_transient($key, $hits + 1, HOUR_IN_SECONDS);
     }
-    set_transient($key, $hits + 1, HOUR_IN_SECONDS);
 
     $name    = isset($_POST['tz_name']) ? sanitize_text_field(wp_unslash($_POST['tz_name'])) : '';
     $email   = isset($_POST['tz_email']) ? sanitize_email(wp_unslash($_POST['tz_email'])) : '';
