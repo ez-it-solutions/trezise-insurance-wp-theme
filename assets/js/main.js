@@ -375,7 +375,7 @@ document.querySelectorAll('.tz-form[action*="admin-post.php"]').forEach(form => 
     btn.disabled = true;
     btn.innerHTML = '<span class="tz-spin" aria-hidden="true"></span>Sending…';
     try {
-      const res  = await fetch(form.action, {
+      const res  = await fetch(form.getAttribute('action'), {
         method:  'POST',
         headers: {'X-Requested-With': 'XMLHttpRequest'},
         body:    new FormData(form),
