@@ -343,23 +343,59 @@ if(emailInput){
   emailInput.addEventListener('blur', checkEmail);
 }
 
-// the ?contact=sent|failed flag did its job once the notice rendered —
-// strip it so the URL (and any copied link) stays clean
+// the ?contact=sent|failed flag + #contact anchor did their job once
+// the no-JS notice rendered — strip both so the URL stays clean
 if(location.search.includes('contact=')){
   const clean = new URL(location.href);
   clean.searchParams.delete('contact');
-  history.replaceState(null, '', clean.pathname + clean.search + clean.hash);
+  history.replaceState(null, '', clean.pathname + clean.search);
 }
 
-// contact form — the POST round-trips through admin-post.php and back,
-// so the button needs a pending state while it's in flight
+// contact form — fetch() submit: pending state on the button, inline
+// success/error notice, no page reload. The plain-POST path still
+// works as the no-JS fallback.
 document.querySelectorAll('.tz-form[action*="admin-post.php"]').forEach(form => {
-  form.addEventListener('submit', () => {
-    const btn = form.querySelector('button[type="submit"]');
+  const btn = form.querySelector('button[type="submit"]');
+  const label = btn ? btn.innerHTML : '';
+  const note = ok => {
+    form.parentElement.querySelectorAll('.tz-form-note').forEach(n => n.remove());
+    const p = document.createElement('p');
+    p.className = `tz-form-note ${ok ? 'tz-ok' : 'tz-err'}`;
+    p.textContent = note.msg;
+    form.insertAdjacentElement('beforebegin', p);
+    p.scrollIntoView({behavior:'smooth', block:'nearest'});
+    return p;
+  };
+  note.msg = '';
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
     if(!btn) return;
     btn.classList.add('tz-sending');
     btn.disabled = true;
     btn.innerHTML = '<span class="tz-spin" aria-hidden="true"></span>Sending…';
+    try {
+      const res  = await fetch(form.action, {
+        method:  'POST',
+        headers: {'X-Requested-With': 'XMLHttpRequest'},
+        body:    new FormData(form),
+      });
+      const data = await res.json();
+      note.msg = data?.data?.message || '';
+      note(!!data?.success);
+      if(data?.success){
+        form.reset();
+        form.querySelectorAll('.tz-valid,.tz-invalid,.tz-warn').forEach(i =>
+          i.classList.remove('tz-valid','tz-invalid','tz-warn'));
+        form.querySelectorAll('.tz-field-hint').forEach(h => h.hidden = true);
+      }
+    } catch {
+      note.msg = 'Something didn’t go through. Please try again, or call us directly.';
+      note(false);
+    }
+    btn.classList.remove('tz-sending');
+    btn.disabled = false;
+    btn.innerHTML = label;
   });
 });
 

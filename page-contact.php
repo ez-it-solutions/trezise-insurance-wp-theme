@@ -40,9 +40,12 @@ get_header();
           <p class="tz-form-note tz-err"><?php esc_html_e('Something didn&rsquo;t go through. Please try again, or call us directly.', 'trezise-insurance'); ?></p>
         <?php endif; ?>
 
+        <?php $tz_ts = time(); ?>
         <form class="tz-form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
           <input type="hidden" name="action" value="trezise_contact">
           <?php wp_nonce_field('trezise_contact', 'trezise_contact_nonce'); ?>
+          <input type="hidden" name="tz_ts" value="<?php echo esc_attr((string) $tz_ts); ?>">
+          <input type="hidden" name="tz_sig" value="<?php echo esc_attr(hash_hmac('sha256', (string) $tz_ts, wp_salt('auth'))); ?>">
           <div class="tz-form-row">
             <div class="tz-field">
               <label for="tz-name"><?php esc_html_e('Full Name', 'trezise-insurance'); ?></label>

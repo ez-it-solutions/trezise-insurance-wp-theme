@@ -31,18 +31,48 @@ function trezise_contact_recipient(): string
 
 function trezise_handle_contact(): void
 {
-    $fallback = wp_get_referer() ?: home_url('/contact/');
+    $ajax = strtolower(sanitize_text_field($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '')) === 'xmlhttprequest';
 
-    // Honeypot — bots fill hidden fields, humans never see it.
-    if (! empty($_POST['tz_company'])) {
-        wp_safe_redirect($fallback);
+    // One exit path — JSON for the fetch() submit, redirect fallback
+    // for no-JS so the form still works everywhere.
+    $respond = static function (bool $ok) use ($ajax): void {
+        if ($ajax) {
+            if ($ok) {
+                wp_send_json_success(['message' => __('Thanks — your message is on its way. We’ll get back to you soon.', 'trezise-insurance')]);
+            }
+            wp_send_json_error(['message' => __('Something didn’t go through. Please try again, or call us directly.', 'trezise-insurance')]);
+        }
+        $fallback = wp_get_referer() ?: home_url('/contact/');
+        wp_safe_redirect(add_query_arg('contact', $ok ? 'sent' : 'failed', $fallback) . '#contact');
         exit;
+    };
+
+    // ── bot defenses ──────────────────────────────────────────────
+    // 1) Honeypot — bots fill hidden fields, humans never see it.
+    if (! empty($_POST['tz_company'])) {
+        $respond(true); // fake success — don't teach the bot it failed
     }
 
     if (! isset($_POST['trezise_contact_nonce']) || ! wp_verify_nonce($_POST['trezise_contact_nonce'], 'trezise_contact')) {
-        wp_safe_redirect(add_query_arg('contact', 'failed', $fallback));
-        exit;
+        $respond(false);
     }
+
+    // 2) Min fill time — the signed render timestamp must check out
+    //    and be >= 3s old; humans can't complete this form faster.
+    $ts  = (int) ($_POST['tz_ts'] ?? 0);
+    $sig = sanitize_text_field(wp_unslash($_POST['tz_sig'] ?? ''));
+    $ok_sig = $ts > 0 && hash_equals(hash_hmac('sha256', (string) $ts, wp_salt('auth')), $sig);
+    if (! $ok_sig || time() - $ts < 3 || $ts > time() + 300) {
+        $respond(true); // racing bot — fake success
+    }
+
+    // 3) Per-IP rate limit — 3 submissions/hour.
+    $key  = 'tz_cf_' . md5(sanitize_text_field($_SERVER['REMOTE_ADDR'] ?? ''));
+    $hits = (int) get_transient($key);
+    if ($hits >= 3) {
+        $respond(false);
+    }
+    set_transient($key, $hits + 1, HOUR_IN_SECONDS);
 
     $name    = isset($_POST['tz_name']) ? sanitize_text_field(wp_unslash($_POST['tz_name'])) : '';
     $email   = isset($_POST['tz_email']) ? sanitize_email(wp_unslash($_POST['tz_email'])) : '';
@@ -65,8 +95,7 @@ function trezise_handle_contact(): void
         );
     }
 
-    wp_safe_redirect(add_query_arg('contact', $valid ? 'sent' : 'failed', $fallback) . '#contact');
-    exit;
+    $respond($valid);
 }
 
 add_action('admin_post_trezise_contact', 'trezise_handle_contact');
