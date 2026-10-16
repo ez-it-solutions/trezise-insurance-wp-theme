@@ -10,23 +10,38 @@ if (! defined('ABSPATH')) {
 }
 
 /**
- * The office mailbox — site sender AND default form recipient.
- * Yahoo SMTP rejects mail unless From or Reply-To matches the
- * authenticated mailbox, so this doubles as the From address.
+ * Contact form recipients — comma/semicolon-separated list from the
+ * trezise_contact_to theme mod (Ez IT → Settings → Site Studio →
+ * Contact, or Customizer → Contact Form). Filterable via
+ * 'trezise_contact_to'.
+ *
+ * @return string[] sanitized email list, at least one entry.
  */
-function trezise_contact_mailbox(): string
+function trezise_contact_recipients(): array
 {
-    $to = (string) get_theme_mod('trezise_contact_to', 'treziseinsurance@yahoo.com');
-    return is_email($to) ? $to : 'treziseinsurance@yahoo.com';
+    $raw  = (string) get_theme_mod('trezise_contact_to', 'treziseinsurance@yahoo.com');
+    $list = array_values(array_filter(array_map('sanitize_email', preg_split('/[\s,;]+/', $raw))));
+    if ($list === []) {
+        $list = ['treziseinsurance@yahoo.com'];
+    }
+    return (array) apply_filters('trezise_contact_to', $list);
 }
 
 /**
- * Where contact submissions are sent. Filterable — e.g.
- * add_filter('trezise_contact_to', fn() => 'agent@example.com');
+ * The sending mailbox — Yahoo SMTP rejects mail unless every From /
+ * Reply-To matches the authenticated mailbox, so the From address is
+ * always the FIRST configured recipient.
  */
-function trezise_contact_recipient(): string
+function trezise_contact_mailbox(): string
 {
-    return (string) apply_filters('trezise_contact_to', trezise_contact_mailbox());
+    return trezise_contact_recipients()[0];
+}
+
+/** Customizer sanitize callback — keeps a clean comma-separated list. */
+function trezise_sanitize_email_list($raw): string
+{
+    $list = array_filter(array_map('sanitize_email', preg_split('/[\s,;]+/', (string) $raw)));
+    return implode(', ', $list);
 }
 
 function trezise_handle_contact(): void
@@ -99,15 +114,81 @@ function trezise_handle_contact(): void
         $respond(false, 'invalid');
     }
 
-    $body = "Name: {$name}\nEmail: {$email}\nPhone: {$phone}\nSubject: {$subject}\n\n{$message}";
+    $heading = 'Website contact: ' . ($subject !== '' ? $subject : 'New message');
+
+    // Branded HTML mail — theme palette: paper card on cream, green
+    // rule, brown heading. Tables + inline styles only; email clients
+    // strip <style> blocks and flexbox.
+    $logo    = get_stylesheet_directory_uri() . '/assets/images/logo.svg';
+    $site    = esc_url(home_url());
+    $esc_msg = nl2br(esc_html($message));
+    $esc_heading = esc_html($heading);
+    $esc_name    = esc_html($name);
+    $esc_email   = esc_html($email);
+    $esc_phone   = esc_html($phone !== '' ? $phone : '—');
+    $esc_subject = esc_html($subject !== '' ? $subject : 'General Question');
+
+    $body = <<<HTML
+<!DOCTYPE html>
+<html><body style="margin:0;padding:0;background:#f7f2e8">
+  <div style="padding:32px 16px;font-family:Arial,Helvetica,sans-serif">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
+      <table role="presentation" width="560" cellpadding="0" cellspacing="0"
+             style="max-width:560px;width:100%;background:#fffdf8;border:1px solid #ddd4c5;border-radius:14px;overflow:hidden">
+        <tr><td style="background:#5e7140;height:6px;font-size:0;line-height:0">&nbsp;</td></tr>
+        <tr><td align="center" style="padding:28px 32px 6px">
+          <img src="{$logo}" alt="Trezise Insurance" width="120"
+               style="display:block;width:120px;height:auto;margin:0 auto">
+          <div style="font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#5e7140;margin-top:10px">
+            Trezise Insurance
+          </div>
+        </td></tr>
+        <tr><td align="center" style="padding:14px 32px 4px">
+          <h1 style="margin:0;font:500 24px/1.3 Georgia,'Times New Roman',serif;color:#603913">{$heading}</h1>
+        </td></tr>
+        <tr><td style="padding:18px 32px 4px">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+                 style="border-top:1px solid #ddd4c5;font-size:14.5px;color:#2f2a24">
+            <tr><td style="padding:10px 0;border-bottom:1px solid #eee6d6;width:82px;vertical-align:top">
+              <span style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#5e7140">Name</span>
+            </td><td style="padding:10px 0;border-bottom:1px solid #eee6d6;font-weight:700">{$esc_name}</td></tr>
+            <tr><td style="padding:10px 0;border-bottom:1px solid #eee6d6;vertical-align:top">
+              <span style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#5e7140">Email</span>
+            </td><td style="padding:10px 0;border-bottom:1px solid #eee6d6">
+              <a href="mailto:{$esc_email}" style="color:#5e7140;font-weight:700">{$esc_email}</a>
+            </td></tr>
+            <tr><td style="padding:10px 0;border-bottom:1px solid #eee6d6;vertical-align:top">
+              <span style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#5e7140">Phone</span>
+            </td><td style="padding:10px 0;border-bottom:1px solid #eee6d6">{$esc_phone}</td></tr>
+            <tr><td style="padding:10px 0;vertical-align:top">
+              <span style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#5e7140">Topic</span>
+            </td><td style="padding:10px 0">{$esc_subject}</td></tr>
+          </table>
+        </td></tr>
+        <tr><td style="padding:6px 32px 8px">
+          <div style="background:#f7f2e8;border:1px solid #ddd4c5;border-radius:10px;padding:16px 18px;
+                      font:15px/1.6 Georgia,'Times New Roman',serif;color:#2f2a24">{$esc_msg}</div>
+        </td></tr>
+        <tr><td align="center" style="padding:20px 32px 26px;font-size:12px;color:#686158">
+          Sent from the contact form on <a href="{$site}" style="color:#5e7140;font-weight:700">{$site}</a>
+        </td></tr>
+      </table>
+    </td></tr></table>
+  </div>
+</body></html>
+HTML;
+
     $ok = wp_mail(
-        trezise_contact_recipient(),
-        'Website contact: ' . ($subject !== '' ? $subject : 'New message'),
+        trezise_contact_recipients(),
+        $heading,
         $body,
         // Yahoo rejects the mail unless EVERY From/Reply-To header
         // matches the authenticated mailbox — so no Reply-To; the
-        // visitor's address is already in the body above.
-        array('From: Trezise Insurance <' . trezise_contact_mailbox() . '>')
+        // visitor's address is in the body.
+        array(
+            'From: Trezise Insurance <' . trezise_contact_mailbox() . '>',
+            'Content-Type: text/html; charset=UTF-8',
+        )
     );
 
     $respond($ok, $ok ? '' : 'mail');

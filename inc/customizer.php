@@ -68,8 +68,8 @@ function trezise_studio_fields(): array
         'label'  => 'Contact',
         'fields' => array(
             'contact_to' => array(
-                'label' => 'Contact form recipient email',
-                'type'  => 'email',
+                'label' => 'Contact form recipient email(s) — comma-separated for more than one. The first address is also the From sender.',
+                'type'  => 'text',
             ),
         ),
     );
@@ -129,12 +129,13 @@ add_action('customize_register', function (WP_Customize_Manager $wp): void {
     ));
     $wp->add_setting('trezise_contact_to', array(
         'default'           => 'treziseinsurance@yahoo.com',
-        'sanitize_callback' => 'sanitize_email',
+        'sanitize_callback' => 'trezise_sanitize_email_list',
     ));
     $wp->add_control('trezise_contact_to', array(
-        'label'   => __('Recipient email', 'trezise-insurance'),
-        'section' => 'trezise_contact',
-        'type'    => 'email',
+        'label'       => __('Recipient email(s)', 'trezise-insurance'),
+        'description' => __('Comma-separate for multiple inboxes. The first address is also the email From sender (Yahoo requires it match the SMTP account).', 'trezise-insurance'),
+        'section'     => 'trezise_contact',
+        'type'        => 'text',
     ));
 
     foreach (trezise_home_sections() as $section_id => $config) {
