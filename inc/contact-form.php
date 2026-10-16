@@ -72,9 +72,13 @@ function trezise_handle_contact(): void
     };
 
     // ── bot defenses ──────────────────────────────────────────────
-    // 1) Honeypot — bots fill hidden fields, humans never see it.
+    // Honeypot — real users never fill this. Bots get a fake success
+    // so nothing tips them off, but the attempt is still logged.
     if (! empty($_POST['tz_company'])) {
-        $respond(true); // fake success — don't teach the bot it failed
+        if (class_exists('EzIT_Mail_Log')) {
+            EzIT_Mail_Log::note('blocked', '', 'Contact form', 'Honeypot filled');
+        }
+        $respond(true);
     }
 
     // 2) Signed render timestamp — the real anti-forgery gate. The HMAC
@@ -85,6 +89,11 @@ function trezise_handle_contact(): void
     $sig = sanitize_text_field(wp_unslash($_POST['tz_sig'] ?? ''));
     $ok_sig = $ts > 0 && hash_equals(hash_hmac('sha256', (string) $ts, wp_salt('auth')), $sig);
     if (! $ok_sig || time() - $ts < 3 || $ts > time() + 300) {
+        if (class_exists('EzIT_Mail_Log')) {
+            EzIT_Mail_Log::note('blocked', '', 'Contact form',
+                $ts === 0 ? 'Missing tz_ts/tz_sig — cached page or forged post'
+                          : (! $ok_sig ? 'Bad signature' : (time() - $ts < 3 ? 'Under 3s fill time' : 'Future timestamp')));
+        }
         $respond(true); // racing/forged bot — fake success
     }
 
