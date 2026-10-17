@@ -34,11 +34,18 @@ $enroll = function_exists('ezit_slot') ? ezit_slot('enroll') : [
     'cta'   => 'Schedule a free plan review', 'url' => '/contact/#contact',
 ];
 if ($enroll) :
-    $e_url = isset($enroll['url']) && $enroll['url'] !== ''
+    // 'custom' replaces the structured fields — free-form copy with its
+    // own inline links/formatting (wp_kses_post), so no wrapping <a>.
+    $e_custom = trim((string) ($enroll['custom'] ?? ''));
+    $e_url    = isset($enroll['url']) && $enroll['url'] !== ''
         ? (str_starts_with((string) $enroll['url'], '/') ? home_url($enroll['url']) : $enroll['url'])
         : home_url('/contact/#contact');
 ?>
+<?php if ($e_custom !== '') : ?>
+<div class="tz-enroll"><span class="tz-enroll-custom"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 10h17M8.5 2.5v5M15.5 2.5v5"/></svg><span class="tz-enroll-label"><?php echo wp_kses_post($e_custom); ?></span></span></div>
+<?php else : ?>
 <div class="tz-enroll"><a href="<?php echo esc_url($e_url); ?>"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 10h17M8.5 2.5v5M15.5 2.5v5"/></svg><span class="tz-enroll-label"><?php echo esc_html($enroll['label'] ?? ''); ?> <strong><?php echo esc_html($enroll['detail'] ?? ''); ?></strong></span><span class="tz-enroll-cta"><?php echo esc_html($enroll['cta'] ?? ''); ?> &rarr;</span></a></div>
+<?php endif; ?>
 <?php endif; ?>
 <header class="tz-header" id="siteHeader">
   <nav class="tz-nav" aria-label="<?php esc_attr_e('Primary navigation', 'trezise-insurance'); ?>">
