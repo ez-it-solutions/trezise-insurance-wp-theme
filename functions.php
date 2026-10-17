@@ -44,10 +44,19 @@ if (function_exists('ezit_core')) {
             'enroll' => [
                 'label'    => 'Enrollment notice bar',
                 'defaults' => [
+                    'mode'   => 'structured',
                     'label'  => 'Annual Enrollment Period',
                     'detail' => 'Oct 15 – Dec 7',
                     'cta'    => 'Schedule a free plan review',
                     'url'    => '/contact/#contact',
+                ],
+            ],
+            'notice' => [
+                'label'    => 'Custom notice bar',
+                'defaults' => [
+                    'mode'  => 'custom',
+                    'bg'    => '#526335',
+                    'color' => '#ffffff',
                 ],
             ],
         ],
@@ -103,4 +112,48 @@ function trezise_nav(string $location, string $fallback): void
         'walker'         => new Trezise_Nav_Walker(),
         'fallback_cb'    => $fallback,
     ]);
+}
+
+/**
+ * Render a theme-declared alert slot (Ez IT → Settings → Alerts & banners).
+ * $fallback is used when Ez IT Core is absent (pass null to render nothing).
+ * Layout comes from the slot's 'mode': 'structured' keeps the icon +
+ * label/detail + CTA-pill link; 'custom' prints the WYSIWYG content as-is
+ * (wp_kses_post — it carries its own links) on bg/color inline styles.
+ */
+function trezise_alert_bar(string $key, ?array $fallback = null): void
+{
+    $cfg = function_exists('ezit_slot') ? ezit_slot($key) : $fallback;
+    if (! is_array($cfg)) {
+        return;
+    }
+    $icon = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 10h17M8.5 2.5v5M15.5 2.5v5"/></svg>';
+
+    if (($cfg['mode'] ?? 'structured') === 'custom') {
+        $custom = trim((string) ($cfg['custom'] ?? ''));
+        if ($custom === '') {
+            return; // custom bar with no copy renders nothing
+        }
+        $bg    = sanitize_hex_color($cfg['bg'] ?? '') ?: '#526335';
+        $color = sanitize_hex_color($cfg['color'] ?? '') ?: '#ffffff';
+        printf(
+            '<div class="tz-enroll tz-enroll--custom" style="background:%1$s;color:%2$s"><span class="tz-enroll-custom">%3$s</span></div>',
+            esc_attr($bg),
+            esc_attr($color),
+            wp_kses_post($custom)
+        );
+        return;
+    }
+
+    $url = isset($cfg['url']) && $cfg['url'] !== ''
+        ? (str_starts_with((string) $cfg['url'], '/') ? home_url($cfg['url']) : $cfg['url'])
+        : home_url('/contact/#contact');
+    printf(
+        '<div class="tz-enroll"><a href="%1$s">%2$s<span class="tz-enroll-label">%3$s <strong>%4$s</strong></span><span class="tz-enroll-cta">%5$s &rarr;</span></a></div>',
+        esc_url($url),
+        $icon,
+        esc_html($cfg['label'] ?? ''),
+        esc_html($cfg['detail'] ?? ''),
+        esc_html($cfg['cta'] ?? '')
+    );
 }

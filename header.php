@@ -26,27 +26,15 @@ if (! defined('ABSPATH')) {
   <a class="tz-util-right" href="tel:9032842821"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><?php esc_html_e('Speak with a local agent:', 'trezise-insurance'); ?> <strong>(903) 284-2821</strong></a>
 </div></div>
 <?php
-// Enrollment notice bar — managed via Ez IT → Settings → Alerts & banners
-// (slot 'enroll'). ezit_slot() returns null when the bar is off or outside
-// its schedule window; without Ez IT Core the theme's own defaults show.
-$enroll = function_exists('ezit_slot') ? ezit_slot('enroll') : [
+// Alert bars — managed via Ez IT → Settings → Alerts & banners (slots
+// 'enroll' + 'notice'). ezit_slot() returns null when a bar is off or
+// outside its schedule; without Ez IT Core, enroll's shipped defaults show.
+trezise_alert_bar('enroll', [
     'label' => 'Annual Enrollment Period', 'detail' => 'Oct 15 – Dec 7',
     'cta'   => 'Schedule a free plan review', 'url' => '/contact/#contact',
-];
-if ($enroll) :
-    // 'custom' replaces the structured fields — free-form copy with its
-    // own inline links/formatting (wp_kses_post), so no wrapping <a>.
-    $e_custom = trim((string) ($enroll['custom'] ?? ''));
-    $e_url    = isset($enroll['url']) && $enroll['url'] !== ''
-        ? (str_starts_with((string) $enroll['url'], '/') ? home_url($enroll['url']) : $enroll['url'])
-        : home_url('/contact/#contact');
+]);
+trezise_alert_bar('notice');
 ?>
-<?php if ($e_custom !== '') : ?>
-<div class="tz-enroll"><span class="tz-enroll-custom"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 10h17M8.5 2.5v5M15.5 2.5v5"/></svg><span class="tz-enroll-label"><?php echo wp_kses_post($e_custom); ?></span></span></div>
-<?php else : ?>
-<div class="tz-enroll"><a href="<?php echo esc_url($e_url); ?>"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 10h17M8.5 2.5v5M15.5 2.5v5"/></svg><span class="tz-enroll-label"><?php echo esc_html($enroll['label'] ?? ''); ?> <strong><?php echo esc_html($enroll['detail'] ?? ''); ?></strong></span><span class="tz-enroll-cta"><?php echo esc_html($enroll['cta'] ?? ''); ?> &rarr;</span></a></div>
-<?php endif; ?>
-<?php endif; ?>
 <header class="tz-header" id="siteHeader">
   <nav class="tz-nav" aria-label="<?php esc_attr_e('Primary navigation', 'trezise-insurance'); ?>">
     <div class="tz-brand-name"><a href="<?php echo esc_url(home_url('/')); ?>"><?php esc_html_e('Trezise', 'trezise-insurance'); ?> <span><?php esc_html_e('Insurance', 'trezise-insurance'); ?></span></a></div>

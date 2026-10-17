@@ -15,7 +15,7 @@ body.admin-bar{--ab:32px}
    edge, so it reads as a deliberate band rather than a flat color block */
 .tz-enroll{background:linear-gradient(180deg,#61763f,#526335);box-shadow:inset 0 1px 0 rgba(255,253,248,.16),inset 0 -1px 0 rgba(0,0,0,.14);text-align:center;font:600 14px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.02em}
 .tz-enroll a,.tz-enroll-custom{display:inline-flex;align-items:center;justify-content:center;gap:13px;flex-wrap:wrap;padding:8px 16px;color:#fff;text-decoration:none}
-.tz-enroll-custom a{color:#fff;text-decoration:underline;text-underline-offset:3px}
+.tz-enroll-custom a{color:inherit;text-decoration:underline;text-underline-offset:3px}
 .tz-enroll svg{flex:none;opacity:.85}
 .tz-enroll-label strong{color:#f2e7c8;margin-left:2px}
 .tz-enroll-cta{display:inline-flex;align-items:center;padding:3px 15px;border-radius:999px;border:1px solid rgba(255,253,248,.4);background:rgba(255,253,248,.12);font-weight:700;transition:background .2s ease,border-color .2s ease}
