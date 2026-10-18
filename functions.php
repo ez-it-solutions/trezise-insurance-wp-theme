@@ -9,7 +9,7 @@ if (! defined('ABSPATH')) {
 
 // Version lives in style.css's Version header — WP's theme data,
 // the updater comparison and the registry all read the same field.
-define('TREZISE_VERSION', (string) wp_get_theme()->get('Version') ?: '1.2.2');
+define('TREZISE_VERSION', (string) wp_get_theme()->get('Version') ?: '1.3.0');
 define('TREZISE_DIR', get_template_directory());
 define('TREZISE_URI', get_template_directory_uri());
 
